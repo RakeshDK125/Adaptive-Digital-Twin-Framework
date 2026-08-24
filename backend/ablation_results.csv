@@ -1,0 +1,6 @@
+Configuration,Fault_Mitigation_Accuracy_%,Decision_Latency_ms
+Full Framework (RL + Agents + KG),97.76,118.48
+W/o Knowledge Graph,88.89,94.44
+W/o Agent Swarm (RL only),75.98,44.05
+W/o RL (PID + Agents only),62.25,110.31
+Baseline (PID only),45.96,15.42
