@@ -1,0 +1,11 @@
+{
+    "Scenario": "A",
+    "Regime": "few-shot",
+    "Seed": 42,
+    "Macro-F1": 0.499999999745,
+    "AUROC": 0.5,
+    "Avg_Reward": 0.9515925645828248,
+    "Adaptation_Episodes": 10,
+    "Detection_Delay_Steps": 1.125716742746937,
+    "Comm_Cost_KB": 81.82052056318902
+}

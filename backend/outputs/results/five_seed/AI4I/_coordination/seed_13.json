@@ -1,0 +1,12 @@
+{
+    "dataset": "AI4I",
+    "configuration": "_coordination",
+    "seed": 13,
+    "accuracy": 0.8739999999912599,
+    "precision": 0.9999999999891304,
+    "recall": 0.9199999999908,
+    "macro_f1": 0.4552083330915038,
+    "latency_s": 0.0753674047092651,
+    "adaptation_steps": 13.03180427544589,
+    "detection_delay_steps": 3.743177272883573
+}

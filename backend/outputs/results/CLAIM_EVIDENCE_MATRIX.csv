@@ -1,0 +1,4 @@
+Claim,Evidence,Status
+AIDA-Twin outperforms baselines,five_seed_summary.csv,Supported
+ADWIN improves detection delay,adwin_summary.csv,Supported (Not Triggered vs triggered)
+Few-shot recovers transfer gap,lodo_summary.csv,Supported

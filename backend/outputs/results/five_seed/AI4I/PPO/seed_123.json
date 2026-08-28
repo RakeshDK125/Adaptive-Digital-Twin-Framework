@@ -1,0 +1,12 @@
+{
+    "dataset": "AI4I",
+    "configuration": "PPO",
+    "seed": 123,
+    "accuracy": 0.7124999999928749,
+    "precision": 0.9999999999894736,
+    "recall": 0.9499999999905,
+    "macro_f1": 0.3410256408472584,
+    "latency_s": 0.0373976255077777,
+    "adaptation_steps": 359.4957599426488,
+    "detection_delay_steps": 31.97179886110609
+}

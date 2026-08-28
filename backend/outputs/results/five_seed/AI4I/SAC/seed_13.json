@@ -1,0 +1,12 @@
+{
+    "dataset": "AI4I",
+    "configuration": "SAC",
+    "seed": 13,
+    "accuracy": 0.7124999999928749,
+    "precision": 0.9999999999894736,
+    "recall": 0.9499999999905,
+    "macro_f1": 0.3410256408472584,
+    "latency_s": 0.0439498315493749,
+    "adaptation_steps": 364.6001716060066,
+    "detection_delay_steps": 24.600014992723537
+}

@@ -1,0 +1,14 @@
+{
+    "PPO": {
+        "learning_rate": "log-uniform [1e-4, 1e-2]",
+        "n_steps": "categorical [1024, 2048, 4096]"
+    },
+    "A2C": {
+        "learning_rate": "log-uniform [1e-4, 1e-2]",
+        "n_steps": "categorical [5, 10, 20]"
+    },
+    "SAC": {
+        "learning_rate": "log-uniform [1e-4, 1e-2]",
+        "batch_size": "categorical [64, 128, 256]"
+    }
+}

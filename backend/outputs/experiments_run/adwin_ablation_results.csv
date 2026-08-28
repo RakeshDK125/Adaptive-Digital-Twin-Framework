@@ -1,0 +1,6 @@
+Configuration,Seed,Accuracy,Precision,Recall,Macro-F1,Decision latency (s),Adaptation time (steps),Detection delay (steps)
+AIDA-Twin⁻ᴬᴰᵂᴵᴺ (Baseline PID),13,0.99999999999,0.0,0.0,0.499999999745,0.004110809642295281,not triggered,not triggered
+AIDA-Twin⁻ᴬᴰᵂᴵᴺ (Baseline PID),42,0.99999999999,0.0,0.0,0.499999999745,0.00249816047538945,not triggered,not triggered
+AIDA-Twin⁻ᴬᴰᵂᴵᴺ (Baseline PID),87,0.99999999999,0.0,0.0,0.499999999745,0.0036250567409318274,not triggered,not triggered
+AIDA-Twin⁻ᴬᴰᵂᴵᴺ (Baseline PID),123,0.99999999999,0.0,0.0,0.499999999745,0.0037858767423914466,not triggered,not triggered
+AIDA-Twin⁻ᴬᴰᵂᴵᴺ (Baseline PID),2024,0.99999999999,0.0,0.0,0.499999999745,0.0033520580755815915,not triggered,not triggered
