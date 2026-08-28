@@ -1,53 +1,97 @@
-# AIDA-Twin: Adaptive Intelligent Digital Twin Framework
+<div align="center">
+  <h1>AIDA-Twin: Adaptive Intelligent Digital Twin Framework</h1>
+  
+  <p><b>A self-healing, highly autonomous Digital Twin architecture bridging the gap between passive monitoring and active control via Reinforcement Learning and Agentic AI.</b></p>
 
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
-![Python 3.12](https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge)
-![React](https://img.shields.io/badge/React-18.x-61DAFB.svg?style=for-the-badge&logo=react)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg?style=for-the-badge&logo=fastapi)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?style=for-the-badge&logo=docker)
+  <!-- Badges -->
+  <p>
+    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="License: MIT"></a>
+    <img src="https://img.shields.io/badge/Python-3.12-blue.svg?style=for-the-badge" alt="Python">
+    <img src="https://img.shields.io/badge/React-18.x-61DAFB.svg?style=for-the-badge&logo=react" alt="React">
+    <img src="https://img.shields.io/badge/FastAPI-0.100+-009688.svg?style=for-the-badge&logo=fastapi" alt="FastAPI">
+    <img src="https://img.shields.io/badge/Docker-Ready-2496ED.svg?style=for-the-badge&logo=docker" alt="Docker">
+  </p>
+</div>
 
-A publication-quality research prototype demonstrating a highly autonomous, self-healing **Digital Twin** architecture for IoT and Industrial systems. 
+<br />
 
-AIDA-Twin bridges the critical gap between passive monitoring and active control. It achieves this by fusing **Reinforcement Learning (Stable-Baselines3)** for continuous control optimization with a **Multi-Agent System (MAS)** for discrete, logical reasoning. These components are tightly unified and orchestrated by a semantic **Knowledge Graph (Neo4j)**.
+## 📖 Overview
+
+Traditional Digital Twins are purely observational—they monitor state but require human intervention to resolve faults. **AIDA-Twin** introduces a paradigm shift by functioning as an **Active Decision Intelligence Engine**. 
+
+It achieves true autonomy by tightly orchestrating three advanced AI paradigms:
+1. **Model-Agnostic Meta-Learning (MAML) over PPO**: For continuous, rapid-adaptation control policies.
+2. **Multi-Agent Systems (MAS)**: For discrete, logical reasoning and localized fault handling.
+3. **Semantic Knowledge Graphs (Neo4j)**: Providing the topology and spatial-temporal context required for the swarm to coordinate.
+
+When high-velocity telemetry streams exhibit concept drift (detected via **ADWIN**), the system automatically triggers a self-healing pipeline, adapting its control policies to unseen operational regimes without human intervention.
+
+---
+
+## 📑 Table of Contents
+- [Key Features](#-key-features)
+- [System Architecture](#-system-architecture)
+- [Repository Structure](#-repository-structure)
+- [Quickstart & Installation](#-quickstart--installation)
+- [Reproducing Benchmarks](#-reproducing-benchmarks)
+- [Documentation](#-documentation)
+- [Citation](#-citation)
 
 ---
 
 ## 🌟 Key Features
 
-*   **Active Decision Intelligence**: Transforms traditional passive digital twins into proactive, self-correcting agents capable of taking direct action.
-*   **Concept Drift Detection (ADWIN)**: Actively monitors continuous high-velocity telemetry streams, instantly detecting distribution anomalies and concept drift using the ADWIN algorithm.
-*   **Rapid Adaptation via Meta-RL**: Utilizes Model-Agnostic Meta-Learning (MAML) principles over PPO to adapt to novel hardware faults and unseen operating environments with minimal adaptation steps.
-*   **Swarm Architecture**: Employs an intelligent multi-agent coordination layer that reasons across time and network topology using topological insights from Neo4j.
-*   **Real-time Dashboard**: A dynamic React/TypeScript frontend offering complete visibility into the Twin's health metrics, agent activities, drift alerts, and active policies.
+*   🎯 **Active Decision Intelligence**: Transforms passive digital twins into proactive, self-correcting autonomous agents capable of taking direct physical action via simulation.
+*   📉 **Concept Drift Detection (ADWIN)**: Actively monitors continuous high-velocity telemetry streams, instantly detecting distribution anomalies and concept drift using the ADWIN algorithm.
+*   ⚡ **Rapid Adaptation via Meta-RL**: Utilizes MAML principles integrated with `Stable-Baselines3` (PPO/SAC/A2C) to adapt to novel hardware faults and unseen operating environments with minimal adaptation steps.
+*   🤖 **Swarm Architecture**: Employs an intelligent multi-agent coordination layer that reasons across time and network topology using semantic graph insights.
+*   📊 **Real-time XAI Dashboard**: A dynamic React/TypeScript frontend offering complete visibility into the Twin's health metrics, drift alerts, active control policies, and SHAP-based Explainable AI (XAI) insights.
 
 ---
 
-## 🏗️ System Architecture & Stack
+## 🏗️ System Architecture
 
-The AIDA-Twin repository is segmented into two primary components driven by modern microservices:
+AIDA-Twin operates on a robust microservice architecture:
 
 ### 1. The Reasoning Engine (`backend/`)
-A robust Python and FastAPI service that drives the core intelligence:
-* **Reinforcement Learning Engine**: Powered by `Stable-Baselines3` (PPO, SAC, A2C).
-* **Graph Intelligence**: Managed via `Neo4j` for complex topological queries.
-* **Agentic Coordination Layer**: Custom multi-agent logic handling dispatch and cross-agent communication.
-* **Data Processing**: Leverages `Pandas` and `NumPy` for high-throughput sensor telemetry formatting.
+The Python/FastAPI backend acts as the brain of the Digital Twin. It orchestrates the flow of telemetry data into the **Virtual Representation Engine**. 
+- **RL Backend**: Powered by `Stable-Baselines3`.
+- **Graph Intelligence**: `Neo4j` handles complex topological queries to route agents to anomalous nodes.
+- **Agentic Coordination**: A custom multi-agent logic controller handling dispatch, failure queuing, and cross-agent communication.
 
 ### 2. The Visualization Interface (`frontend/`)
-A modern, responsive web application built for operational visibility:
-* **Framework**: React 18 + TypeScript.
-* **Styling**: TailwindCSS for sleek, dynamic UI components.
-* **Data Visualization**: Recharts for live telemetry plotting and RL convergence tracking.
+A responsive web application built for operational visibility.
+- **Framework**: React 18 + TypeScript.
+- **Styling**: TailwindCSS for sleek, dynamic UI components.
+- **Data Visualization**: Recharts for live telemetry plotting, fault visualizations, and RL convergence tracking.
 
 ---
 
-## 🚀 Quickstart & Reproducibility
+## 📂 Repository Structure
+
+```text
+📦 Adaptive-Digital-Twin-Framework
+ ┣ 📂 backend/
+ ┃ ┣ 📂 app/              # FastAPI application & core domain logic
+ ┃ ┣ 📂 data/             # AI4I, Gas Turbine, and Hydraulic datasets
+ ┃ ┣ 📂 outputs/          # Generated results, CSVs, JSONs, and Figures
+ ┃ ┣ 📂 scripts/          # Benchmark and evaluation harnesses (Five-seed, LODO)
+ ┃ ┗ 📜 main.py           # Backend entry point
+ ┣ 📂 frontend/           # React + TypeScript Dashboard
+ ┣ 📂 docs/               # In-depth architectural and API documentation
+ ┣ 📜 docker-compose.yml  # Container orchestration
+ ┗ 📜 README.md           # This file
+```
+
+---
+
+## 🚀 Quickstart & Installation
 
 ### Prerequisites
-*   Docker & Docker Compose (v2+)
+*   [Docker Desktop](https://www.docker.com/products/docker-desktop/) or Docker Compose (v2+)
 *   Git
 
-### Deployment via Docker
+### Deployment via Docker (Recommended)
 
 1. **Clone the repository**:
    ```bash
@@ -73,25 +117,28 @@ A modern, responsive web application built for operational visibility:
 
 ---
 
-## 🔬 Running Benchmarks & Experiments
+## 🔬 Reproducing Benchmarks
 
-For researchers looking to reproduce the findings or run the evaluation harnesses (Five-Seed Ablations, Leave-One-Dataset-Out cross-validation, and Baseline Tuning):
+For researchers looking to reproduce the findings or run the evaluation harnesses (Five-Seed Ablations, Leave-One-Domain-Out cross-validation, and Baseline Tuning):
 
 ```bash
 # Navigate to the scripts directory
 cd backend/scripts
 
-# Run the primary robust evaluation suite
+# 1. Run the primary robust evaluation suite (Full vs Ablations)
 python five_seed_runs.py
 
-# Run the Cross-Domain generalization evaluations (LODO)
+# 2. Run the Cross-Domain generalization evaluations (LODO)
 python lodo_experiments.py
+
+# 3. Generate the actual paper plots and statistical CSVs
+python generate_formatted_doc.py
 ```
-*Note: Resulting CSVs and raw metrics are automatically dumped into `backend/outputs/experiments_run/` for subsequent statistical analysis.*
+*Note: Resulting CSVs, JSONs, and publication-ready graphs are automatically dumped into the `backend/outputs/` directory.*
 
 ---
 
-## 📚 Documentation Navigation
+## 📚 Documentation
 
 Deep dives into the core architectural components and design decisions can be found in the `/docs` directory:
 - 📖 [**Architecture & Theoretical Foundation**](docs/ARCHITECTURE.md)
@@ -103,7 +150,7 @@ Deep dives into the core architectural components and design decisions can be fo
 
 ## 🤝 Contributing
 
-We welcome community contributions, particularly for expanding the supported Reinforcement Learning algorithms or improving the multi-agent orchestration efficiency. 
+We welcome community contributions! Whether it is expanding the supported Reinforcement Learning algorithms (e.g., adding native Ray/RLlib support), improving the multi-agent orchestration efficiency, or fixing bugs:
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -113,9 +160,18 @@ We welcome community contributions, particularly for expanding the supported Rei
 
 ---
 
-## 📝 Cite Us
+## 📝 Citation
 
-If you utilize the AIDA-Twin framework or our benchmark suites in your research, please cite our upcoming paper in Elsevier.
+If you utilize the AIDA-Twin framework or our benchmark suites in your research, please cite our upcoming paper in Elsevier:
+
+```bibtex
+@article{aidatwin2026,
+  title={Adaptive Intelligent Digital Twin Framework utilizing Meta-RL and Agentic AI},
+  author={Rakesh et al.},
+  journal={Elsevier},
+  year={2026}
+}
+```
 
 ---
 
