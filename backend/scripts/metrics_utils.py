@@ -8,7 +8,7 @@ def calculate_classification_metrics(true_labels: np.ndarray, pred_labels: np.nd
     """Calculates real metrics using sklearn."""
     
     if len(np.unique(true_labels)) < 2:
-        return {"Accuracy": 0.0, "Precision": 0.0, "Recall": 0.0, "Macro-F1": 0.0}
+        return {"Accuracy": 0.0, "Precision": 0.0, "Recall": 0.0, "Macro-F1": 0.0, "ROC-AUC": 0.5}
         
     accuracy = accuracy_score(true_labels, pred_labels)
     
