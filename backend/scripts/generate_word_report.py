@@ -162,6 +162,19 @@ def create_report():
             row_cells[2].text = str(f1_val)
             row_cells[3].text = str(auc_val)
 
+    # Append the final explicit summaries from REPORT_final.md
+    report_md_path = os.path.join(results_dir, 'REPORT_final.md')
+    if os.path.exists(report_md_path):
+        doc.add_page_break()
+        doc.add_heading('5. Executive Summary (System Metrics & Scalability)', level=1)
+        with open(report_md_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if line.strip():
+                    if line.startswith('#'):
+                        pass # skip markdown headers as we just want the text
+                    else:
+                        doc.add_paragraph(line.strip())
+
     downloads_dir = os.path.join(os.environ['USERPROFILE'], 'Downloads')
     final_docx_path = os.path.join(downloads_dir, 'AIDA_Twin_Final_Results_Report_Final.docx')
     # Save the file (overwrite existing)
