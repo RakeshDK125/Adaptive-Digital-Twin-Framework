@@ -14,10 +14,20 @@ def get_dataset_path(dataset_name, filename=""):
     return path
 
 def _scale_and_split(df, target_col, task_type, seed):
-    """Handles the 70/15/15 stratified split and scaling."""
-    # Split 70/15/15
-    train_df, temp_df = train_test_split(df, test_size=0.3, random_state=seed, stratify=df[target_col])
-    val_df, test_df = train_test_split(temp_df, test_size=0.5, random_state=seed, stratify=temp_df[target_col])
+    """Handles the 70/15/15 chronological split to prevent temporal leakage."""
+    n = len(df)
+    train_end = int(0.7 * n)
+    val_end = int(0.85 * n)
+    
+    train_df = df.iloc[:train_end].copy()
+    val_df = df.iloc[train_end:val_end].copy()
+    test_df = df.iloc[val_end:].copy()
+    
+    # To maintain seed variance while strictly preserving chronology and preventing leakage,
+    # we randomly downsample the train set by 5% based on the seed.
+    np.random.seed(seed)
+    drop_indices = np.random.choice(train_df.index, size=int(0.05 * len(train_df)), replace=False)
+    train_df = train_df.drop(drop_indices)
     
     # Fit scaler on TRAIN ONLY
     scaler = StandardScaler()

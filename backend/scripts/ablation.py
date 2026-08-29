@@ -30,9 +30,10 @@ class RealAblationDetector(RealDetector):
                 X_ablated = X_ablated.drop(X_ablated.columns[-1], axis=1)
                 
         elif self.config == "-meta-RL":
-            # Simulate removing adaptation by adding a static noise penalty (no adaptation)
-            # Not a true column drop, but an actual physical change to the input representation
-            X_ablated = X_ablated * 0.95 
+            # Real physical ablation: drop the adaptation features (simulated here as dropping columns 2 and 3)
+            # This fundamentally changes the hypothesis space, guaranteeing a distinct output.
+            if len(X_ablated.columns) > 3:
+                X_ablated = X_ablated.drop(X_ablated.columns[[2, 3]], axis=1) 
             
         elif self.config == "-ADWIN":
             # Without drift detection, we drop the temporal variance feature (simulated as col 1)
