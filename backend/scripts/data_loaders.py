@@ -119,8 +119,8 @@ def load_hydraulic(seed: int = 42):
     val_map = {3: 0, 20: 1, 100: 2}
     y = np.array([val_map[v] for v in cooler_condition])
     
-    # Load sensors
-    sensors = ['PS1', 'PS2', 'PS3', 'PS4', 'PS5', 'PS6', 'EPS1', 'FS1', 'FS2', 'TS1', 'TS2', 'TS3', 'TS4', 'VS1', 'CE', 'CP', 'SE']
+    # Load sensors, explicitly excluding virtual leakage sensors (CE, CP, SE)
+    sensors = ['PS1', 'PS2', 'PS3', 'PS4', 'PS5', 'PS6', 'EPS1', 'FS1', 'FS2', 'TS1', 'TS2', 'TS3', 'TS4', 'VS1']
     features_list = []
     
     # Read each sensor file, compute mean and std per row (cycle)
@@ -136,7 +136,46 @@ def load_hydraulic(seed: int = 42):
     df = pd.concat(features_list, axis=1)
     df['Cooler_Condition'] = y
     
-    return _scale_and_split(df, target_col='Cooler_Condition', task_type='multiclass', seed=seed)
+    # GROUPED CHRONOLOGICAL SPLIT
+    # The dataset is perfectly sorted by class (all 3s, then all 20s, then all 100s).
+    # To prevent temporal leakage between adjacent cycles while ensuring all classes 
+    # are in the test set, we must split EACH class block chronologically.
+    train_blocks, val_blocks, test_blocks = [], [], []
+    for c in [0, 1, 2]:
+        block = df[df['Cooler_Condition'] == c]
+        n = len(block)
+        train_end = int(0.7 * n)
+        val_end = int(0.85 * n)
+        
+        train_blocks.append(block.iloc[:train_end])
+        val_blocks.append(block.iloc[train_end:val_end])
+        test_blocks.append(block.iloc[val_end:])
+        
+    train_df = pd.concat(train_blocks)
+    val_df = pd.concat(val_blocks)
+    test_df = pd.concat(test_blocks)
+    
+    # To restore seed variance for the 5-seed run while maintaining chronological integrity,
+    # we dynamically drop 5% of the train set based on the seed.
+    np.random.seed(seed)
+    drop_indices = np.random.choice(train_df.index, size=int(0.05 * len(train_df)), replace=False)
+    train_df = train_df.drop(drop_indices)
+    
+    scaler = StandardScaler()
+    feature_cols = [col for col in df.columns if col != 'Cooler_Condition']
+    
+    train_df[feature_cols] = scaler.fit_transform(train_df[feature_cols])
+    val_df[feature_cols] = scaler.transform(val_df[feature_cols])
+    test_df[feature_cols] = scaler.transform(test_df[feature_cols])
+    
+    return {
+        "train": (train_df[feature_cols], train_df['Cooler_Condition']),
+        "val": (val_df[feature_cols], val_df['Cooler_Condition']),
+        "test": (test_df[feature_cols], test_df['Cooler_Condition']),
+        "task_type": "multiclass",
+        "scaler": scaler,
+        "feature_cols": feature_cols
+    }
 
 if __name__ == "__main__":
     print("Testing Data Loaders...")
