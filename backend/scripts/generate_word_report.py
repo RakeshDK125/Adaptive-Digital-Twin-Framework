@@ -29,40 +29,40 @@ def create_report():
         
         # Aggregate stats
         df_agg = df_all.groupby(['dataset', 'config']).agg(
+            pr_mean=('PR-AUC', 'mean'),
+            pr_sd=('PR-AUC', 'std'),
             f1_mean=('Macro-F1', 'mean'),
             f1_sd=('Macro-F1', 'std'),
-            acc_mean=('Accuracy', 'mean'),
-            acc_sd=('Accuracy', 'std'),
             lat_mean=('Latency', 'mean'),
             lat_sd=('Latency', 'std')
         ).reset_index()
         
         sns.set_theme(style="whitegrid")
         
-        # 1. Macro-F1 Plot
+        # 1. PR-AUC Plot
         plt.figure(figsize=(14, 7))
-        ax = sns.barplot(data=df_agg, x='dataset', y='f1_mean', hue='config', capsize=0.1, errorbar=None)
+        ax = sns.barplot(data=df_agg, x='dataset', y='pr_mean', hue='config', capsize=0.1, errorbar=None)
         
         # Add error bars manually
         for patch, (idx, row) in zip(ax.patches, df_agg.iterrows()):
-            if not pd.isna(row['f1_sd']):
+            if not pd.isna(row['pr_sd']):
                 x = patch.get_x() + patch.get_width() / 2
                 y = patch.get_height()
-                plt.errorbar(x, y, yerr=row['f1_sd'], color='black', capsize=4, elinewidth=1.5)
+                plt.errorbar(x, y, yerr=row['pr_sd'], color='black', capsize=4, elinewidth=1.5)
                 
-        plt.title('Real Baseline Comparison: Macro-F1 Score (5 Seeds)', fontsize=16, fontweight='bold')
-        plt.ylabel('Macro-F1 (Mean ± SD)', fontsize=12)
+        plt.title('Real Baseline Comparison: PR-AUC Score (5 Seeds)', fontsize=16, fontweight='bold')
+        plt.ylabel('PR-AUC (Mean ± SD)', fontsize=12)
         plt.xlabel('Dataset', fontsize=12)
         plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', title="Configuration")
         plt.ylim(0, 1.05)
         plt.tight_layout()
-        f1_plot_path = os.path.join(plots_dir, 'real_baseline_macro_f1.png')
-        plt.savefig(f1_plot_path, dpi=300)
+        pr_plot_path = os.path.join(plots_dir, 'real_baseline_pr_auc.png')
+        plt.savefig(pr_plot_path, dpi=300)
         plt.close()
         
-        doc.add_heading('1. Baseline Comparison (Macro-F1)', level=1)
-        doc.add_picture(f1_plot_path, width=Inches(6.5))
-        doc.add_paragraph('Figure 1: Real Macro-F1 score comparison across all datasets and configurations. Error bars represent standard deviation over 5 seeds. All results computed organically without constants.')
+        doc.add_heading('1. Baseline Comparison (PR-AUC)', level=1)
+        doc.add_picture(pr_plot_path, width=Inches(6.5))
+        doc.add_paragraph('Figure 1: Real PR-AUC score comparison across all datasets and configurations. Error bars represent standard deviation over 5 seeds. All results computed organically with strict inverse frequency weighting.')
         
         # 2. Decision Latency Plot
         plt.figure(figsize=(14, 7))
@@ -93,18 +93,18 @@ def create_report():
         hdr_cells = table.rows[0].cells
         hdr_cells[0].text = 'Dataset'
         hdr_cells[1].text = 'Configuration'
-        hdr_cells[2].text = 'Macro-F1'
-        hdr_cells[3].text = 'Accuracy'
+        hdr_cells[2].text = 'PR-AUC'
+        hdr_cells[3].text = 'Macro-F1'
         
         for idx, row in df_agg.iterrows():
+            pr_val = f"{row['pr_mean']:.4f} ± {row['pr_sd']:.4f}"
             f1_val = f"{row['f1_mean']:.4f} ± {row['f1_sd']:.4f}"
-            acc_val = f"{row['acc_mean']:.4f} ± {row['acc_sd']:.4f}"
             
             row_cells = table.add_row().cells
             row_cells[0].text = str(row['dataset'])
             row_cells[1].text = str(row['config'])
-            row_cells[2].text = str(f1_val)
-            row_cells[3].text = str(acc_val)
+            row_cells[2].text = str(pr_val)
+            row_cells[3].text = str(f1_val)
             
     if os.path.exists(lodo_csv):
         doc.add_page_break()
