@@ -1,0 +1,12 @@
+{
+    "dataset": "Gas_Turbine",
+    "configuration": "-coordination",
+    "seed": 42,
+    "accuracy": 0.0699999999993,
+    "precision": 0.0699999999993,
+    "recall": 0.9999999998571428,
+    "macro_f1": 0.06542056068530001,
+    "latency_s": 0.0024682519969064743,
+    "adaptation_steps": "MISSING",
+    "detection_delay_steps": "MISSING"
+}

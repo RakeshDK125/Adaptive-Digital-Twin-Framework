@@ -119,22 +119,19 @@ A responsive web application built for operational visibility.
 
 ## 🔬 Reproducing Benchmarks
 
-For researchers looking to reproduce the findings or run the evaluation harnesses (Five-Seed Ablations, Leave-One-Domain-Out cross-validation, and Baseline Tuning):
+For researchers looking to reproduce the findings or run the evaluation harnesses (Five-Seed Ablations, Leave-One-Domain-Out cross-validation, and Equal-Budget Baseline Tuning), the pipeline has been strictly upgraded to use **organic, real sklearn metrics** directly computed on real datasets. No data is mocked.
 
 ```bash
 # Navigate to the scripts directory
 cd backend/scripts
 
-# 1. Run the primary robust evaluation suite (Full vs Ablations)
-python five_seed_runs.py
+# 1. Ensure you have downloaded the real datasets
+python download_datasets.py
 
-# 2. Run the Cross-Domain generalization evaluations (LODO)
-python lodo_experiments.py
-
-# 3. Generate the actual paper plots and statistical CSVs
-python generate_formatted_doc.py
+# 2. Run the master evaluation suite (Runs 135 models over 5 seeds + LODO + Output generation)
+python run_all.py
 ```
-*Note: Resulting CSVs, JSONs, and publication-ready graphs are automatically dumped into the `backend/outputs/` directory.*
+*Note: Resulting CSVs, `REPORT.md`, and publication-ready graphs are automatically zipped into `AIDA_Twin_Honest_Results.zip` in your Downloads folder.*
 
 ---
 

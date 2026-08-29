@@ -1,0 +1,13 @@
+{
+    "dataset_target": "AI4I_2020",
+    "scenario": "Scenario_C",
+    "regime": "zero_shot",
+    "seed": 13,
+    "accuracy": 0.9499999999905,
+    "macro_f1": 0.48717948692465485,
+    "auroc": 0.5,
+    "reward": 0.9276725053787231,
+    "adaptation_episodes": 0,
+    "detection_delay": "MISSING",
+    "communication_cost": "MISSING"
+}

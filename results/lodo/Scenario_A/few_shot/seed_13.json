@@ -1,0 +1,13 @@
+{
+    "dataset_target": "Hydraulic_Systems",
+    "scenario": "Scenario_A",
+    "regime": "few_shot",
+    "seed": 13,
+    "accuracy": 0.6699999999933,
+    "macro_f1": 0.4011976045453763,
+    "auroc": 0.5,
+    "reward": 0.7010500431060791,
+    "adaptation_episodes": 100,
+    "detection_delay": "MISSING",
+    "communication_cost": "MISSING"
+}

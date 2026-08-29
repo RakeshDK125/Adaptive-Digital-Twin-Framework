@@ -1,0 +1,13 @@
+{
+    "dataset_target": "Gas_Turbine",
+    "scenario": "Scenario_B",
+    "regime": "few_shot",
+    "seed": 2024,
+    "accuracy": 0.4799999999952,
+    "macro_f1": 0.32432432409007483,
+    "auroc": 0.25263157894736843,
+    "reward": 0.2865919768810272,
+    "adaptation_episodes": 100,
+    "detection_delay": "MISSING",
+    "communication_cost": "MISSING"
+}

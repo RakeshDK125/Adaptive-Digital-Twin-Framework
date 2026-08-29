@@ -1,0 +1,12 @@
+{
+    "dataset": "AI4I_2020",
+    "configuration": "AIDA-Twin_minus_ADWIN",
+    "seed": 42,
+    "accuracy": 0.9799999999901999,
+    "precision": 0.0,
+    "recall": 0.0,
+    "macro_f1": 0.4949494946945209,
+    "latency_s": 0.0010598780016880483,
+    "adaptation_steps": "Not triggered",
+    "detection_delay_steps": "Not triggered"
+}

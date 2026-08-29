@@ -1,0 +1,12 @@
+{
+    "dataset": "Hydraulic_Systems",
+    "configuration": "AIDA-Twin_minus_ADWIN",
+    "seed": 87,
+    "accuracy": 0.6899999999931,
+    "precision": 0.0,
+    "recall": 0.0,
+    "macro_f1": 0.40828402342221903,
+    "latency_s": 0.0006455389998154715,
+    "adaptation_steps": "Not triggered",
+    "detection_delay_steps": "Not triggered"
+}

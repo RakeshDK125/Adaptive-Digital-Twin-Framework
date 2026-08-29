@@ -1,0 +1,12 @@
+{
+    "dataset": "AI4I_2020",
+    "configuration": "PPO",
+    "seed": 2024,
+    "accuracy": 0.6499999999935,
+    "precision": 0.028571428570612248,
+    "recall": 0.49999999975,
+    "macro_f1": 0.4196650635396791,
+    "latency_s": 0.001974086998670828,
+    "adaptation_steps": "MISSING",
+    "detection_delay_steps": "MISSING"
+}

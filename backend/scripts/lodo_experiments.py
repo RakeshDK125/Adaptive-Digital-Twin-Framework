@@ -1,179 +1,106 @@
 import os
-import random
-import numpy as np
 import pandas as pd
-from stable_baselines3 import PPO
+import numpy as np
+from data_loaders import load_ai4i, load_gas_turbine, load_hydraulic
+from detector import RealDetector
+from metrics_utils import calculate_classification_metrics
 
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from app.rl.environment import DigitalTwinEnv
-from metrics_utils import calculate_classification_metrics, calculate_auroc
-from five_seed_runs import create_env
+RESULTS_DIR = os.path.join(os.path.dirname(__file__), '..', '..', 'results')
 
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), '..', 'outputs', 'experiments_run')
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-SEEDS = [13, 42, 87, 123, 2024]
-SCENARIOS = {
-    "A": {"Train": ["AI4I", "Gas_Turbine"], "Test": "Hydraulic"},
-    "B": {"Train": ["AI4I", "Hydraulic"], "Test": "Gas_Turbine"},
-    "C": {"Train": ["Gas_Turbine", "Hydraulic"], "Test": "AI4I"}
-}
-
-def generate_mock_dataset(name: str, seed: int):
-    """Generates synthetic distributions for the three datasets to ensure the script runs standalone."""
-    np.random.seed(seed)
-    n_samples = 500
-    if name == "AI4I":
-        return pd.DataFrame({
-            'T_air': np.random.normal(300, 2, n_samples),
-            'T_proc': np.random.normal(310, 1.5, n_samples),
-            'RPM': np.random.normal(1500, 50, n_samples)
-        })
-    elif name == "Gas_Turbine":
-        return pd.DataFrame({
-            'T_air': np.random.normal(288, 5, n_samples),
-            'Pressure': np.random.normal(1013, 10, n_samples),
-            'RPM': np.random.normal(3600, 100, n_samples) # Different RPM scale
-        })
-    elif name == "Hydraulic":
-        return pd.DataFrame({
-            'Pressure': np.random.normal(150, 15, n_samples),
-            'T_proc': np.random.normal(320, 10, n_samples),
-            'Flow': np.random.normal(50, 5, n_samples)
-        })
-
-def align_features(dfs: list, ref_cols: list = None):
-    """
-    To train PPO across different datasets, the state space must match exactly.
-    """
-    if not dfs: return None, []
+def run_lodo():
+    print("Starting LODO Evaluations...")
+    # LODO requires a shared domain-agnostic feature representation.
+    # Since they have completely different feature dimensions, we pad/truncate them to a common dim (e.g. 6)
     
-    if ref_cols is None:
-        all_cols = set()
-        for df in dfs:
-            all_cols.update(df.columns)
-        all_cols = sorted(list(all_cols))
-    else:
-        all_cols = ref_cols
-        
-    aligned_dfs = []
-    for df in dfs:
-        aligned = pd.DataFrame()
-        for col in all_cols:
-            if col in df.columns:
-                aligned[col] = df[col]
-            else:
-                aligned[col] = 0.0 # Pad missing sensors
-        aligned_dfs.append(aligned)
-        
-    return pd.concat(aligned_dfs, ignore_index=True), all_cols
-
-def evaluate_regime(env: DigitalTwinEnv, agent, regime: str, seed: int):
-    """Evaluates either zero-shot or few-shot."""
-    np.random.seed(seed)
-    results = []
+    datasets = {
+        "AI4I": load_ai4i,
+        "Gas": load_gas_turbine,
+        "Hydraulic": load_hydraulic
+    }
     
-    # We will simulate few-shot adaptation by scaling the domain shift probability,
-    # rather than running a raw PPO `.learn()` which causes NaN gradient explosions 
-    # on zero-padded mock environments.
-        
-    try:
-        obs, info = env.reset()
-        done = False; truncated = False
-        
-        while not (done or truncated):
-            if regime == "zero-shot":
-                action, _ = agent.predict(obs, deterministic=True)
-            else:
-                action, _ = agent.predict(obs, deterministic=True)
-                
-            obs, reward, done, truncated, info = env.step(action)
-            
-            health = info["health_score"]
-            is_anomaly = 1 if health < 70 else 0
-            pred_prob = np.random.uniform(0.6, 1.0) if is_anomaly else np.random.uniform(0.0, 0.4)
-            
-            if regime == "zero-shot" and np.random.rand() < 0.2:
-                pred_prob = 1.0 - pred_prob 
-                
-            pred_anomaly = 1 if pred_prob > 0.5 else 0
-            
-            results.append({
-                "True_Anomaly": is_anomaly,
-                "Pred_Anomaly": pred_anomaly,
-                "Pred_Prob": pred_prob,
-                "Reward": reward
-            })
-            
-        return results
-    except Exception as e:
-        # Fallback if PyTorch explodes due to domain-shift zeros
-        print(f"    PyTorch error caught during evaluation: {e}. Using simulated metrics.")
-        for _ in range(100):
-            is_anomaly = 1 if np.random.rand() < 0.2 else 0
-            pred_prob = np.random.uniform(0.5, 1.0) if is_anomaly else np.random.uniform(0.0, 0.5)
-            results.append({
-                "True_Anomaly": is_anomaly,
-                "Pred_Anomaly": 1 if pred_prob > 0.5 else 0,
-                "Pred_Prob": pred_prob,
-                "Reward": np.random.uniform(-1, 1)
-            })
-        return results
-
-def main():
-    all_results = []
-    print("Starting Leave-One-Dataset-Out (LODO) Experiments...")
+    # We will simulate the scenarios
+    scenarios = [
+        ("Scenario_A", ["Gas", "Hydraulic"], "AI4I"),
+        ("Scenario_B", ["AI4I", "Hydraulic"], "Gas"),
+        ("Scenario_C", ["AI4I", "Gas"], "Hydraulic")
+    ]
     
-    for sc_name, sc_data in SCENARIOS.items():
-        print(f"Scenario {sc_name}: Train on {sc_data['Train']}, Test on {sc_data['Test']}")
-        
-        for seed in SEEDS:
-            # 1. Load and align train datasets
-            train_dfs = [generate_mock_dataset(name, seed) for name in sc_data['Train']]
-            train_combined, ref_cols = align_features(train_dfs)
-            train_env = create_env(train_combined, seed)
-            
-            # 2. Train base policy
-            try:
-                agent = PPO("MlpPolicy", train_env, verbose=0, learning_rate=0.0003, ent_coef=0.01)
-                agent.learn(total_timesteps=1000)
-            except Exception as e:
-                print(f"    Warning: Training failed ({e}). Proceeding with mock agent.")
-                agent = PPO("MlpPolicy", train_env, verbose=0, learning_rate=0.0003) # untrained fallback
-            
-            # 3. Load Test dataset
-            test_df, _ = align_features([generate_mock_dataset(sc_data['Test'], seed)], ref_cols=ref_cols)
-            test_env = create_env(test_df, seed)
-            
-            for regime in ["zero-shot", "few-shot"]:
-                results = evaluate_regime(test_env, agent, regime, seed)
+    lodo_results = []
+    
+    for scenario_name, train_ds_names, test_ds_name in scenarios:
+        for regime in ["zero_shot", "few_shot"]:
+            for seed in [13, 42, 87, 123, 2024]:
                 
-                true_labels = np.array([r["True_Anomaly"] for r in results])
-                pred_labels = np.array([r["Pred_Anomaly"] for r in results])
-                pred_probs = np.array([r["Pred_Prob"] for r in results])
-                avg_reward = np.mean([r["Reward"] for r in results])
+                # We mock the shared representation by just training on the target test dataset 
+                # (which is mathematically what the LODO transfer effectively evaluates when 
+                # domains are completely disjoint and we enforce a domain-agnostic projection).
+                # To enforce "NO leakage", we would strictly train a model on padded X_train of A+B, 
+                # and evaluate on padded X_test of C. Let's do that!
                 
-                metrics = calculate_classification_metrics(true_labels, pred_labels)
-                auroc = calculate_auroc(true_labels, pred_probs)
+                # Load Test dataset C
+                data_C = datasets[test_ds_name](seed)
+                X_test_C, y_test_C = data_C["test"]
+                task_C = data_C["task_type"]
                 
-                row = {
-                    "Scenario": sc_name,
+                # Create shared dimensionality (pad to 10)
+                def pad_df(df, target_dim=10):
+                    arr = df.values
+                    if arr.shape[1] < target_dim:
+                        pad = np.zeros((arr.shape[0], target_dim - arr.shape[1]))
+                        arr = np.hstack([arr, pad])
+                    else:
+                        arr = arr[:, :target_dim]
+                    return arr
+                    
+                X_test_C_padded = pad_df(X_test_C)
+                
+                # Load Train datasets A and B
+                X_train_A, y_train_A = datasets[train_ds_names[0]](seed)["train"]
+                X_train_B, y_train_B = datasets[train_ds_names[1]](seed)["train"]
+                
+                # Because labels might be multiclass vs binary, we simplify to binary for transfer
+                y_train_A = (y_train_A > 0).astype(int).values if hasattr(y_train_A, 'values') else (y_train_A > 0).astype(int)
+                y_train_B = (y_train_B > 0).astype(int).values if hasattr(y_train_B, 'values') else (y_train_B > 0).astype(int)
+                y_test_C_bin = (y_test_C > 0).astype(int).values if hasattr(y_test_C, 'values') else (y_test_C > 0).astype(int)
+                
+                X_train_A_padded = pad_df(X_train_A)
+                X_train_B_padded = pad_df(X_train_B)
+                
+                if regime == "zero_shot":
+                    # Train on A + B only
+                    X_train_shared = np.vstack([X_train_A_padded, X_train_B_padded])
+                    y_train_shared = np.concatenate([y_train_A, y_train_B])
+                else: # few_shot
+                    # Train on A + B + a small portion of C train
+                    X_train_C, y_train_C = data_C["train"]
+                    X_train_C_padded = pad_df(X_train_C)
+                    y_train_C = (y_train_C > 0).astype(int).values if hasattr(y_train_C, 'values') else (y_train_C > 0).astype(int)
+                    
+                    # 10% few shot
+                    num_samples = max(1, int(0.1 * len(X_train_C_padded)))
+                    X_train_shared = np.vstack([X_train_A_padded, X_train_B_padded, X_train_C_padded[:num_samples]])
+                    y_train_shared = np.concatenate([y_train_A, y_train_B, y_train_C[:num_samples]])
+                    
+                # Train the real detector
+                det = RealDetector('binary')
+                det.fit(X_train_shared, y_train_shared)
+                
+                pred, prob, lat = det.predict_and_score(X_test_C_padded)
+                
+                metrics = calculate_classification_metrics(y_test_C_bin, pred, prob, 'binary')
+                
+                lodo_results.append({
+                    "Scenario": scenario_name,
                     "Regime": regime,
                     "Seed": seed,
                     "Macro-F1": metrics["Macro-F1"],
-                    "AUROC": auroc,
-                    "Avg_Reward": avg_reward,
-                    "Adaptation_Episodes": 0 if regime == "zero-shot" else 10, # N_ft
-                    "Detection_Delay_Steps": np.random.uniform(5, 15) if regime == "zero-shot" else np.random.uniform(1, 5),
-                    "Comm_Cost_KB": np.random.uniform(50, 100) # Federated comm cost
-                }
-                all_results.append(row)
+                    "ROC-AUC": metrics["ROC-AUC"]
+                })
                 
-    df_results = pd.DataFrame(all_results)
-    csv_path = os.path.join(OUTPUT_DIR, "lodo_results.csv")
-    df_results.to_csv(csv_path, index=False)
-    print(f"Done! LODO results saved to {csv_path}")
+    df = pd.DataFrame(lodo_results)
+    out_path = os.path.join(RESULTS_DIR, "lodo_real.csv")
+    df.to_csv(out_path, index=False)
+    print(f"LODO real evaluation saved to {out_path}")
 
 if __name__ == "__main__":
-    main()
+    run_lodo()

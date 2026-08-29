@@ -1,0 +1,12 @@
+{
+    "dataset": "AI4I_2020",
+    "configuration": "Full",
+    "seed": 123,
+    "accuracy": 0.7299999999926999,
+    "precision": 0.0,
+    "recall": 0.0,
+    "macro_f1": 0.42196531766861567,
+    "latency_s": 0.006134703998686746,
+    "adaptation_steps": "MISSING",
+    "detection_delay_steps": "MISSING"
+}

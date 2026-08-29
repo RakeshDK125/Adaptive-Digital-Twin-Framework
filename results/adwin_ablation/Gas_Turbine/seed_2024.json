@@ -1,0 +1,12 @@
+{
+    "dataset": "Gas_Turbine",
+    "configuration": "AIDA-Twin_minus_ADWIN",
+    "seed": 2024,
+    "accuracy": 0.9499999999905,
+    "precision": 0.0,
+    "recall": 0.0,
+    "macro_f1": 0.48717948692465485,
+    "latency_s": 0.0014885519983363338,
+    "adaptation_steps": "Not triggered",
+    "detection_delay_steps": "Not triggered"
+}
