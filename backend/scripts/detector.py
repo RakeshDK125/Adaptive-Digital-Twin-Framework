@@ -1,6 +1,6 @@
 import time
 import numpy as np
-from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier, ExtraTreesClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier, ExtraTreesClassifier, GradientBoostingClassifier
 from sklearn.neural_network import MLPClassifier
 
 class RealDetector:
@@ -10,8 +10,8 @@ class RealDetector:
         
         # Use diverse hypotheses spaces to ensure distinct (but valid) approximations of RL policies
         if config == 'PPO':
-            # PPO mapped to HistGradientBoosting
-            self.model = HistGradientBoostingClassifier(max_iter=100, learning_rate=0.1, random_state=42)
+            # PPO mapped to HistGradientBoosting with distinct params from Full
+            self.model = HistGradientBoostingClassifier(max_iter=80, learning_rate=0.05, random_state=42)
         elif config == 'A2C':
             # A2C mapped to Random Forest
             self.model = RandomForestClassifier(n_estimators=50, max_depth=10, random_state=42)
