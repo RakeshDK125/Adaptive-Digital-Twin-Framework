@@ -48,7 +48,9 @@ def create_report():
             if not pd.isna(row['pr_sd']):
                 x = patch.get_x() + patch.get_width() / 2
                 y = patch.get_height()
-                plt.errorbar(x, y, yerr=row['pr_sd'], color='black', capsize=4, elinewidth=1.5)
+                lower_err = min(y, row['pr_sd'])
+                upper_err = row['pr_sd']
+                plt.errorbar(x, y, yerr=[[lower_err], [upper_err]], color='black', capsize=4, elinewidth=1.5)
                 
         plt.title('Real Baseline Comparison: PR-AUC Score (5 Seeds)', fontsize=16, fontweight='bold')
         plt.ylabel('PR-AUC (Mean ± SD)', fontsize=12)
@@ -71,7 +73,9 @@ def create_report():
             if not pd.isna(row['lat_sd']):
                 x = patch.get_x() + patch.get_width() / 2
                 y = patch.get_height()
-                plt.errorbar(x, y, yerr=row['lat_sd'], color='black', capsize=4, elinewidth=1.5)
+                lower_err = min(y, row['lat_sd'])
+                upper_err = row['lat_sd']
+                plt.errorbar(x, y, yerr=[[lower_err], [upper_err]], color='black', capsize=4, elinewidth=1.5)
                 
         plt.title('Real Decision Latency Comparison (5 Seeds)', fontsize=16, fontweight='bold')
         plt.ylabel('Latency in Seconds (Mean ± SD)', fontsize=12)
@@ -124,7 +128,9 @@ def create_report():
             if not pd.isna(row['f1_sd']):
                 x = patch.get_x() + patch.get_width() / 2
                 y = patch.get_height()
-                plt.errorbar(x, y, yerr=row['f1_sd'], color='black', capsize=4, elinewidth=1.5)
+                lower_err = min(y, row['f1_sd'])
+                upper_err = row['f1_sd']
+                plt.errorbar(x, y, yerr=[[lower_err], [upper_err]], color='black', capsize=4, elinewidth=1.5)
                 
         plt.title('Real LODO Transfer Performance: Zero-Shot vs Few-Shot', fontsize=14, fontweight='bold')
         plt.ylabel('Macro-F1 (Mean ± SD)', fontsize=12)
