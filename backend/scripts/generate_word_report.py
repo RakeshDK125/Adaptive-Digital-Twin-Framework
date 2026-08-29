@@ -168,7 +168,9 @@ def create_report():
     try:
         doc.save(final_docx_path)
     except PermissionError:
-        final_docx_path = os.path.join(downloads_dir, 'AIDA_Twin_Final_Results_Report_Final_v2.docx')
+        import time
+        timestamp = int(time.time())
+        final_docx_path = os.path.join(downloads_dir, f'AIDA_Twin_Final_Results_Report_Final_{timestamp}.docx')
         doc.save(final_docx_path)
         
     print(f"Successfully created REAL professional report at {final_docx_path}")
