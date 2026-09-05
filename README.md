@@ -159,13 +159,13 @@ We welcome community contributions! Whether it is expanding the supported Reinfo
 
 ## 📝 Citation
 
-If you utilize the AIDA-Twin framework or our benchmark suites in your research, please cite our upcoming paper in Elsevier:
+If you utilize the AIDA-Twin framework or our benchmark suites in your research, please cite our upcoming paper:
 
 ```bibtex
 @article{aidatwin2026,
   title={Adaptive Intelligent Digital Twin Framework utilizing Meta-RL and Agentic AI},
   author={Rakesh et al.},
-  journal={Elsevier},
+  journal={Preprint},
   year={2026}
 }
 ```
