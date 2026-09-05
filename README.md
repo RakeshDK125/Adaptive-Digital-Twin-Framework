@@ -165,7 +165,7 @@ If you utilize the AIDA-Twin framework or our benchmark suites in your research,
 @article{aidatwin2026,
   title={Adaptive Intelligent Digital Twin Framework utilizing Meta-RL and Agentic AI},
   author={Rakesh et al.},
-  journal={Journal Name},
+  journal={[Insert Target Journal Name]},
   year={2026}
 }
 ```
